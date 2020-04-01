@@ -1,0 +1,9 @@
+file_dataset = ./smiles_df.csv
+col_smiles = SMILES
+col_X = aT bT m e
+col_id = ID
+file_fingerprint = fp_df.csv
+polymer_fp_version = 2
+ismolecule = 0
+drop_failed_rows = 0
+ncore = 18

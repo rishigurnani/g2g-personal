@@ -1,0 +1,3 @@
+file_model = /home/rgur/CS6250_project/models/trial2/all_features/model.pkl
+file_fingerprint  = fp_df.csv
+file_output = output.csv
