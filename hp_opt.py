@@ -3,7 +3,7 @@ import sys
 from multiprocessing import Pool
 
 args = sys.argv
-n_core = args[1]
+#n_core = args[1]
 
 params = {'lr': [.001, .005, .0002],
          'batch_size': [8, 32, 128],
