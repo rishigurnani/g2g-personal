@@ -37,6 +37,7 @@ n_mols = len_d
 
 n_succ = 0.0
 
+new_targets = []
 for i in xrange(0, len(data), num_decode):
     source = i[0]
     set_x = set([x[0] for x in data[i:i+num_decode]])
@@ -49,8 +50,9 @@ for i in xrange(0, len(data), num_decode):
     for j in good:
         target = j[2]
         if target not in mols:
-            n_succ += 1
-            print '%s %s' %(source, target)
+            if target not in new_targets:
+                n_succ += 1
+                print '%s %s' %(source, target)
         
 print 'Evaluated on %d samples' % (n_mols)
 print 'success rate', n_succ / (n_mols*num_decode)

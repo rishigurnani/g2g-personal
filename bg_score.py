@@ -53,8 +53,8 @@ def fix_fp():
     df = pd.read_csv('fp_df.csv')
     #df = df.iloc[df.dropna().index].reset_index().drop('index', axis=1)
     df = df.iloc[df.dropna().index]
-    use_cols = [col for col in df.keys() if col != 'ID' and 'Unnamed' not in col]
-    df.drop_duplicates(subset=use_cols, inplace=True)
+    #use_cols = [col for col in df.keys() if col != 'ID' and 'Unnamed' not in col]
+    #df.drop_duplicates(subset=use_cols, inplace=True)
     df.to_csv('fp_df_fixed.csv')
     
 def create_pred_input(model_path):
