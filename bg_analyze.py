@@ -7,7 +7,7 @@ parser.add_argument('--num_decode', type=int, default=20)
 parser.add_argument('--sim_delta', type=float, default=0.4)
 parser.add_argument('--prop_delta', type=float, default=0.9)
 parser.add_argument('--total_n', type=int, default=0)
-parser.add_argument('--mols_path', type=string)
+parser.add_argument('--mols_path', type=str)
 
 args = parser.parse_args()
 
@@ -39,7 +39,7 @@ n_succ = 0.0
 
 new_targets = []
 for i in xrange(0, len(data), num_decode):
-    source = i[0]
+    source = data[i][0]
     set_x = set([x[0] for x in data[i:i+num_decode]])
     assert len(set_x) == 1
 
