@@ -11,7 +11,14 @@ params = {'lr': [.001, .005, .0002],
           'depthG': [3, 5, 8]
          }
 
+# params = {'lr': [.001],
+#          'batch_size': [8],
+#           'depthT': [3],
+#           'depthG': [3]
+#          }
+
 epochs = 5
+#epochs = 1
 
 n_decode = 10
 
@@ -24,6 +31,7 @@ cwd = os.getcwd() + '/'
 round_tup = []
 
 def validate(data):
+    print("Batch info: ", data)
     lr = data[0]
     batch_size = data[1]
     depthT = data[2]
