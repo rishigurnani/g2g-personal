@@ -19,6 +19,7 @@ n_decode = 10
 bg_path = '~/CS6250_project/models/trial2/all_features/model.pkl'
 
 best_results = []
+diversity_results = []
 
 cwd = os.getcwd() + '/'
 
@@ -54,11 +55,17 @@ for lr in params['lr']:
                     with open('%sbest_of_round.txt' %path, 'r') as f:
                         for line in f:
                             l = line.strip()
-                            if 'Epoch' in l:
+                            if 'Epoch with best model' in l:
                                 n_epoch = l.split(': ')[1]
-                            elif 'Accuracy' in l:    
+                            elif 'Accuracy for best model' in l:    
                                 best_acc  = l.split(': ')[1]
+                            elif 'Epoch with most diverse model' in l:
+                                div_epoch = l.split(': ')[1]
+                            elif 'Diversity of that model' in l:
+                                best_div = l.split(': ')[1]
+                  
                     best_results.append((path, n_epoch, best_acc))
+                    diversity_results.append((path, div_epoch, best_div))
                     round_end = time.time()
                     
                     print '\n'
@@ -69,5 +76,8 @@ for lr in params['lr']:
                 else:
                     print 'Skipped lr_%s_bs_%s_depthT_%s_depthG_%s' % (lr, batch_size, depthT, depthG)
                     
-srt = sorted(best_results, key=lambda x: x[2], reverse=True)
-print srt[0]
+srt_acc = sorted(best_results, key=lambda x: x[2], reverse=True)
+srt_div = sorted(diversity_results, key=lambda x: x[2], reverse=True)
+
+print "Best Accuracy %s" %srt_acc[0]
+print "Best Diversity %s" %srt_div[0]
