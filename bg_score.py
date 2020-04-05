@@ -51,7 +51,10 @@ def run_fp():
 
 def fix_fp():
     df = pd.read_csv('fp_df.csv')
-    df = df.iloc[df.dropna().index].reset_index().drop('index', axis=1)
+    #df = df.iloc[df.dropna().index].reset_index().drop('index', axis=1)
+    df = df.iloc[df.dropna().index]
+    use_cols = [col for col in df.keys() if col != 'ID' and 'Unnamed' not in col]
+    df.drop_duplicates(subset=use_cols, inplace=True)
     df.to_csv('fp_df_fixed.csv')
     
 def create_pred_input(model_path):
@@ -73,7 +76,8 @@ def get_pred():
     
     df = pd.read_csv('output.csv')
     normed = df['y'].tolist()
-    return [(val*1.67668) + 4.34115 for val in normed]
+    original_scale = [(val*1.67668) + 4.34115 for val in normed]
+    return zip(df.index.to_list(), original_scale)
 
 def get_all_preds(l):
     poly_l = [polymerize(i) for i in l]
@@ -100,15 +104,17 @@ for line in sys.stdin:
     ys.append(y)
     xs.append(x)
     if y == "None": y = None
-    sim2Ds.append(similarity(x, y))
+    #sim2Ds.append(similarity(x, y))
 
 outs = get_all_preds(ys)
 
-for ind, out in enumerate(outs):
+for out in outs:
+    ind = out[0]
+    bg = out[1]
     x = xs[ind]
-    sim2D = sim2Ds[ind]
     y = ys[ind]
+    sim2D = similarity(x, y)
     try:
-        print x, y, sim2D, out
+        print x, y, sim2D, bg
     except:
         print x, y, sim2D, 0.0
