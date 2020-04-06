@@ -115,6 +115,6 @@ for out in outs:
     y = ys[ind]
     sim2D = similarity(x, y)
     try:
-        print x, y, sim2D, bg
+        print ind, x, y, sim2D, bg
     except:
-        print x, y, sim2D, 0.0
+        print ind, x, y, sim2D, 0.0

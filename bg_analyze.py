@@ -1,6 +1,7 @@
 import sys
 import argparse
 import io
+import pandas as pd
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--num_decode', type=int, default=20)
@@ -78,32 +79,69 @@ for line in stdin:
     elif start_append:
             data.append(line.split())
 #data = [line.split() for line in sys.stdin]
-data = [(a,b,float(c),float(d)) for a,b,c,d in data]
+data = [(int(e),a,b,float(c),float(d)) for e,a,b,c,d in data]
 
 n_mols = len_d
 
 n_succ = 0.0
 
+#load fp_df_fixed
+fp_df = pd.read_csv('./fp_df_fixed.csv')
+
+def build_dict(data):
+    '''
+    Build a dictionary for all successful pairs
+    '''
+    d = {}
+    for i in data:
+        ind = i[0]
+        x = i[1]
+        y = i[2]
+        sim = i[3]
+        bg = i[4]
+        if x in d:
+            d[x].append((ind, y, sim, bg))
+        else:
+            d[x] = [(ind, y, sim, bg)]
+    return d
+
+data_d = build_dict(data)
 new_targets = []
 pairs = []
-for i in xrange(0, len(data), num_decode):
-    source = data[i][0]
-    set_x = set([x[0] for x in data[i:i+num_decode]])
-    assert len(set_x) == 1
+# for i in xrange(0, len(data), num_decode):
+#     source = data[i][0]
+#     set_x = set([x[0] for x in data[i:i+num_decode]])
+#     assert len(set_x) == 1
 
-    good = [(sim,prop,new) for _,new,sim,prop in data[i:i+num_decode] if 1 > sim >= sim_delta and prop >= prop_delta]
-    #n_succ += len(good)
-#     if len(good) > 0:
-#         n_succ += 1
-    for j in good:
-        target = j[2]
+#     good = [(sim,prop,new) for _,new,sim,prop in data[i:i+num_decode] if 1 > sim >= sim_delta and prop >= prop_delta]
+#     for j in good:
+#         target = j[2]
+#         if target not in mols:
+#             if target not in new_targets:
+#                 new_targets.append(target)
+#                 pairs.append((source, target))
+                
+#                 n_succ += 1
+#                 print '%s %s' %(source, target)
+for x, val in zip(data_d.keys(), data_d.values()):
+    
+    good = [(ind,sim,bg,y) for ind,y,sim,bg in val if 1>sim>=sim_delta and bg>=prop_delta]
+    #     ind = val[0]
+    #     y = val[1]
+    #     sim = val[2]
+    #     bg = val[3]
+    for tup in good:
+        target = tup[3]
+        ind = tup[0]
         if target not in mols:
-            if target not in new_targets:
-                new_targets.append(target)
-                pairs.append((source, target))
+            fp = fp_df.iloc[ind, :].tolist()
+            if fp not in new_targets:
+                new_targets.append(fp)
+                pairs.append((x, target))
                 
                 n_succ += 1
-                print '%s %s' %(source, target)
+                print '%s %s' %(x, target)
+    
 
 div_score = diversity(pairs)
 print 'Evaluated on %d samples' % (n_mols)
