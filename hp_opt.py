@@ -9,20 +9,20 @@ args = sys.argv
 skip = [] #add hyperparameter combos which should be skipped
 
 params = {'lr': [.001, .005, .0002],
-         'batch_size': [8, 32, 128],
+         'batch_size': [8, 32],
           'depthT': [6],
-          'depthG': [3]
+          'depthG': [3, 8]
          }
 
-# params = {'lr': [.001, .005],
-#          'batch_size': [8, 32],
+# params = {'lr': [.0002],
+#          'batch_size': [128],
 #           'depthT': [6],
 #           'depthG': [3]
 #          }
 
-epochs = 5
+epochs = 4 #default is 5
 
-n_decode = 10
+n_decode = 8 #default is 10
 
 bg_path = '~/CS6250_project/models/trial2/all_features/model.pkl'
 
@@ -57,8 +57,8 @@ for lr in params['lr']:
                     if not os.path.isdir(results_dir):
                         os.makedirs(results_dir)
                     os.chdir(results_dir)
-    #                 os.system('python /home/rgur/iclr19-graph2graph/diff_vae/vae_train.py --train %s --vocab %svocab.txt --save_dir %s \
-    #             --hidden_size 300 --rand_size 16 --epoch %s --anneal_rate 0.8 --lr %s --batch_size %s --depthT %s --depthG %s | tee %s/LOG' %(processed_dir, data_dir, models_dir, epochs, lr, batch_size, depthT, depthG, models_dir) )
+                    os.system('python /home/rgur/iclr19-graph2graph/diff_vae/vae_train.py --train %s --vocab %svocab.txt --save_dir %s \
+                --hidden_size 300 --rand_size 16 --epoch %s --anneal_rate 0.8 --lr %s --batch_size %s --depthT %s --depthG %s | tee %s/LOG' %(processed_dir, data_dir, models_dir, epochs, lr, batch_size, depthT, depthG, models_dir) )
                     os.system('python /home/rgur/CS6250_project/scripts/val_script.py %s %s %s %s %s > %sbest_of_round.txt' %(models_dir, str(epochs), n_decode, bg_path, data_dir, path) )
                     
                     n_epoch = 0

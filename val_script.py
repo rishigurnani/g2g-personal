@@ -9,6 +9,9 @@ N_DECODE=args[3] #number of monomers per test monomers #number of test monomers
 BG_PATH=args[4] #path to bandgap predictor
 DATA_DIR=args[5]
 
+if DIR[-1] == '/':
+    DIR = DIR[:-1]
+
 def tail( f, lines=20 ):
     total_lines_wanted = lines
 

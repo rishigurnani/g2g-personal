@@ -16,6 +16,7 @@ stdin = sys.stdin
 num_decode = args.num_decode
 sim_delta = args.sim_delta
 prop_delta = args.prop_delta
+total_n = args.total_n
 mols_path = args.mols_path
 
 
@@ -72,7 +73,7 @@ for line in open(mols_path, 'r'):
 data = []
 start_append = False
 
-len_d = args.total_n
+len_d = total_n
 for line in stdin:
     if 'Done' in line:
         start_append = True
@@ -87,6 +88,8 @@ n_succ = 0.0
 
 #load fp_df_fixed
 fp_df = pd.read_csv('./fp_df_fixed.csv')
+ignore_cols = [col for col in fp_df.keys() if col == 'ID' or 'Unnamed' in col]
+fp_df = fp_df.drop(ignore_cols, axis=1)
 
 def build_dict(data):
     '''
@@ -108,42 +111,41 @@ def build_dict(data):
 data_d = build_dict(data)
 new_targets = []
 pairs = []
-# for i in xrange(0, len(data), num_decode):
-#     source = data[i][0]
-#     set_x = set([x[0] for x in data[i:i+num_decode]])
-#     assert len(set_x) == 1
-
-#     good = [(sim,prop,new) for _,new,sim,prop in data[i:i+num_decode] if 1 > sim >= sim_delta and prop >= prop_delta]
-#     for j in good:
-#         target = j[2]
-#         if target not in mols:
-#             if target not in new_targets:
-#                 new_targets.append(target)
-#                 pairs.append((source, target))
-                
-#                 n_succ += 1
-#                 print '%s %s' %(source, target)
+caught = []
 for x, val in zip(data_d.keys(), data_d.values()):
-    
+    #print "Values: %s\n" %val
     good = [(ind,sim,bg,y) for ind,y,sim,bg in val if 1>sim>=sim_delta and bg>=prop_delta]
-    #     ind = val[0]
-    #     y = val[1]
-    #     sim = val[2]
-    #     bg = val[3]
+    #print "Good: %s\n" %good
     for tup in good:
         target = tup[3]
         ind = tup[0]
+        #print "Target %s\n" %target
         if target not in mols:
+            #print "target not in mols\n"
             fp = fp_df.iloc[ind, :].tolist()
-            if fp not in new_targets:
+            is_same = []
+            for other in new_targets:
+                #print "Other %s\n" %other[0:10]
+                #print "New fp %s\n" %fp[0:10]
+                result = (np.abs(np.subtract(other, fp)) < .001).all()
+                #print "Bool %s\n" %result
+                is_same.append(result)
+
+            #print "Is same: %s" %is_same
+            if not any(is_same):
                 new_targets.append(fp)
+                #print "new_targets %s\n" %[i[0:10] for i in new_targets]
                 pairs.append((x, target))
                 
                 n_succ += 1
-                print '%s %s' %(x, target)
-    
+                print '%s %s %s' %(ind, x, target)
+            else:
+                #print "Target already in new targets\n"
+                #print "new_targets %s\n" %[i[0:10] for i in new_targets]
+                caught.append(target)
 
 div_score = diversity(pairs)
+
 print 'Evaluated on %d samples' % (n_mols)
 print 'success rate', n_succ / (n_mols*num_decode)
 print 'diversity score %s' %div_score
